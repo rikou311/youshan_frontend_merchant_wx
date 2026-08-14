@@ -1,0 +1,42 @@
+---
+description: 微信小程序（React/Taro）开发总则：复用商城网站 API，禁止照搬 Web 运行时
+alwaysApply: true
+---
+
+# 商户端微信小程序开发总则
+
+本仓库是 **微信小程序**，用 **React + TypeScript + Taro** 开发。业务与接口以旧商城网站为参考，UI/运行时按小程序约束重写。
+
+## 参考旧项目（API 来源）
+
+- 路径：`d:\program\youshan_frontend_merchant`
+- 请求封装：`src/service/request.js`（axios `instance`）
+- 接口调用主要在：`src/redux/**`、`src/page/**`
+- 路径前缀：业务多用 `/apis/youshan-m/...`，公共多用 `/apis/common/...`
+
+做功能时：**先在旧项目搜同名接口与入参/出参**，再在本仓库用小程序请求层实现；不要凭记忆编造 URL。
+
+## 复用什么 / 不复用什么
+
+| 复用 | 不照搬 |
+|------|--------|
+| 接口 path、method、请求体、响应字段 | `axios`、antd `message`、cookie / `localStorage` 登录跳转 |
+| 业务字段含义、校验规则、流程顺序 | `react-router-dom`、`window` / `document`、HTML 标签 |
+| 页面信息架构（有哪些列表/详情） | MUI / antd / antd-mobile 组件与样式 |
+
+鉴权改为小程序方案（如 `Taro.setStorageSync` + 请求头 `Authorization`）；未登录用 `Taro.navigateTo` / `reLaunch`，禁止 `window.location`。
+
+## 本仓库技术约束
+
+- 组件用 `@tarojs/components`（`View` / `Text` / `Image` 等），禁止 `div` / `span` / `img`
+- 网络用项目内基于 `Taro.request` 的封装，对齐旧接口 path 与 payload
+- 新增接口文件建议放 `src/services/`（或项目既有 API 目录），按业务拆分，命名与旧 redux/page 职责对应便于对照
+- Skills：`taro-wechat-dev`（技术）· `mall-api`（接口）· `wechat-auth-payment`（登录支付）· `mall-ui`（视觉）· `feature-builder`（开发流程）· `project-code-review`（自检）
+
+## 对照示例
+
+```ts
+// 旧站：instance.post('/apis/youshan-m/merchantorder/getOrderById', { id })
+// 小程序：同一 path / body，经 Taro.request 封装调用
+await getOrderById({ id })
+```

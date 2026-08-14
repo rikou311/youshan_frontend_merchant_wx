@@ -1,0 +1,10 @@
+{
+  "name": "youshan-frontend-merchant-wx",
+  "version": "1.0.0",
+  "description": "有膳商户端微信小程序",
+  "framework": "React",
+  "compiler": "webpack5",
+  "templatesIgnore": {
+    "gitignore": true
+  }
+}

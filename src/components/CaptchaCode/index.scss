@@ -1,0 +1,26 @@
+.captcha {
+  min-width: 180px;
+  height: 80px;
+  padding: 0 16px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ff640c 0%, #f2853c 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.captcha__text {
+  font-size: 36px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 6px;
+  line-height: 1.2;
+}
+
+.captcha__hint {
+  margin-top: 4px;
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.85);
+}

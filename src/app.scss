@@ -1,0 +1,15 @@
+page {
+  --color-brand: #ff640c;
+  --color-brand-strong: #ff5723;
+  --color-cta: #f2853c;
+  --color-wechat: #07c160;
+  background: linear-gradient(180deg, #fff4ec 0%, #f7f3f0 40%, #ece8e4 100%);
+  color: #312020;
+  font-size: 28px;
+  box-sizing: border-box;
+}
+
+view,
+text {
+  box-sizing: border-box;
+}
