@@ -73,7 +73,7 @@ export default defineConfig<'webpack5'>(async (merge) => {
         open: true,
         proxy: {
           '/apis': {
-            target: 'http://127.0.0.1:9292',
+            target: 'http://127.0.0.1:9191',
             changeOrigin: true,
             pathRewrite: { '^/apis/': '/' },
           },

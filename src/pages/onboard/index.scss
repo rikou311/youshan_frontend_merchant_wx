@@ -1,0 +1,124 @@
+.onboard {
+  min-height: 100vh;
+  padding: 48px 32px 80px;
+  background: linear-gradient(180deg, #ff640c 0%, #fff4ec 42%, #f7f3f0 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.onboard__hero {
+  padding-top: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.onboard__brand {
+  font-size: 56px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.onboard__sub {
+  font-size: 28px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.onboard__card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-shadow: 0 12px 32px rgba(49, 32, 32, 0.08);
+}
+
+.onboard__title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #312020;
+  text-align: center;
+}
+
+.onboard__hint {
+  font-size: 26px;
+  color: #6b5a56;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.onboard__btn {
+  height: 88px;
+  line-height: 88px;
+  border: none !important;
+  border-radius: 999px !important;
+  font-size: 30px !important;
+  font-weight: 600;
+}
+
+.onboard__btn--primary {
+  background: #ff5723 !important;
+  color: #ffffff !important;
+}
+
+.onboard__btn--outline {
+  background: #ffffff !important;
+  color: #ff640c !important;
+  border: 2px solid #ff640c !important;
+}
+
+.onboard__btn--bind {
+  background: #07c160 !important;
+  color: #ffffff !important;
+  margin-top: 8px;
+}
+
+.onboard__btn--disabled {
+  opacity: 0.7;
+}
+
+.onboard__form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 8px;
+  padding-top: 24px;
+  border-top: 1px solid #f0e8e4;
+}
+
+.onboard__field {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.onboard__label {
+  font-size: 26px;
+  color: #6b5a56;
+}
+
+.onboard__input {
+  height: 80px;
+  padding: 0 24px;
+  border-radius: 12px;
+  background: #f7f3f0;
+  font-size: 28px;
+  color: #312020;
+}
+
+.onboard__error {
+  font-size: 26px;
+  color: #e53935;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.onboard__back {
+  font-size: 26px;
+  color: #ff640c;
+  text-align: center;
+  margin-top: 8px;
+}

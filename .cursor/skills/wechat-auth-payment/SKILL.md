@@ -33,14 +33,14 @@ description: >-
 注册：`POST /apis/common/merchantuseradd/add`（`unick, name, uname, upass, umail, phone`）。  
 登出：`POST /apis/common/index/logout` + 清本地。
 
-## 小程序微信登录（相对旧站新增）
+## 小程序微信登录
 
-旧站是 H5 OAuth（`redirect` / `redirectGzh`），**不能直接用于小程序**。推荐流程：
+旧站是 H5 OAuth（`redirect` / `redirectGzh`），**不能直接用于小程序**。
 
-1. `Taro.login()` 取 `code`  
-2. 调后端换 `openid` / session / 自定义登录态（后端需提供小程序专用接口；若尚未有，先与后端对齐，**禁止伪造 path**）  
-3. 已绑定用户 → 发 `loginToken`，写入 storage  
-4. 未绑定 → 进入绑定页，再调绑定接口
+1. `Taro.login()` 取 `code`
+2. `POST /apis/common/wxlogin/miniLogin` body `{ code }`
+3. 已绑定：`success` + `results` 为 `Bearer ...` → 写入 storage → 首页
+4. 未绑定：`results === "WECHATUNBOUND"`，`extra` 为 **openId 字符串** → 用户授权 → 商家注册 / `boundWechatMini`
 
 ### 绑定 / 解绑（旧站可参考）
 
@@ -48,6 +48,7 @@ description: >-
 |------|--------|------|
 | PC 绑定 | `POST /apis/common/wxlogin/boundWechat` | `{ uname, upass, token }` |
 | 公众号绑定 | `POST /apis/common/wxlogin/boundWechatGzh` | 同上 |
+| 小程序绑定 | `POST /apis/common/wxlogin/boundWechatMini` | `{ uname, upass, token }`，token 为 miniLogin 返回的 openId |
 | 绑定列表 | `POST /apis/common/index/boundList` | |
 | 解绑 | `POST /apis/common/index/unbound` | `{ token }` |
 

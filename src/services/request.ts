@@ -2,8 +2,14 @@ import Taro from '@tarojs/taro'
 import type { ApiResponse } from '@/types/auth'
 import { clearLoginSession, getLoginToken } from '@/utils/auth'
 
-/** H5 走本地代理；小程序需配置合法 request 域名后改成完整后端地址 */
-const BASE_URL = process.env.TARO_APP_API || ''
+/** 商户后端（dev：application-dev.properties server.port=9191） */
+const API_ORIGIN = 'http://127.0.0.1:9191'
+
+/** /apis/common/xxx → http://127.0.0.1:9191/common/xxx（后端无 /apis 前缀） */
+function resolveUrl(url: string) {
+  const path = url.startsWith('/apis/') ? url.slice('/apis'.length) : url
+  return `${API_ORIGIN}${path}`
+}
 
 function isAuthWhitelisted(url: string) {
   return (
@@ -47,12 +53,13 @@ export async function request<T = unknown>(options: {
 
   try {
     const res = await Taro.request({
-      url: `${BASE_URL}${url}`,
+      url: resolveUrl(url),
       method,
       data,
       header: finalHeader,
       timeout: 30000,
     })
+    console.log('[request]', method, resolveUrl(url), res.statusCode, res.data)
 
     if (res.statusCode === 401) {
       clearLoginSession()

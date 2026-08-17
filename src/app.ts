@@ -5,7 +5,7 @@ import './app.scss'
 
 function App({ children }: PropsWithChildren) {
   useLaunch(() => {
-    // 启动时：已登录 → 首页；未登录 → 停留登录页（首页）
+    // 已登录 → 首页；未登录 → 登录页（pages 第一项）
     gateOnLaunch()
   })
 

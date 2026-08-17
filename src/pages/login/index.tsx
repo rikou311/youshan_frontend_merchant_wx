@@ -1,101 +1,73 @@
-import { useMemo, useRef, useState } from 'react'
-import { View, Text, Input, Button } from '@tarojs/components'
-import type { CommonEvent } from '@tarojs/components'
+import { useState } from 'react'
+import { View, Text, Button } from '@tarojs/components'
 import Taro, { useLoad } from '@tarojs/taro'
-import CaptchaCode from '@/components/CaptchaCode'
-import { loginByPassword, mapLoginError } from '@/services/auth'
-import { clearLoginSession, setLoginSession } from '@/utils/auth'
-import { gateOnLaunch, goHome, goRegister } from '@/utils/nav'
+import {
+  checkMallEntryByWxCode,
+} from '@/services/auth'
+import { setLoginSession, setWxEnterPending } from '@/utils/auth'
+import { gateOnLaunch, goHome, goOnboard } from '@/utils/nav'
 import './index.scss'
 
 export default function LoginPage() {
-  const [uname, setUname] = useState('')
-  const [upass, setUpass] = useState('')
-  const [code, setCode] = useState('')
   const [submitting, setSubmitting] = useState(false)
-  const [bannerMsg, setBannerMsg] = useState('')
-  const captchaKey = useRef(0)
-  const [captchaNonce, setCaptchaNonce] = useState(0)
 
   useLoad(() => {
-    // 已注册且已登录 → 直接进首页
+    // 第一次打开：已登录 → 首页；否则停留本页
     gateOnLaunch()
   })
 
-  const canSubmit = useMemo(
-    () => !!uname.trim() && !!upass && !!code.trim() && !submitting,
-    [uname, upass, code, submitting],
-  )
-
-  const refreshCaptcha = () => {
-    captchaKey.current += 1
-    setCaptchaNonce(captchaKey.current)
-    setCode('')
-  }
-
-  const onLogin = async () => {
-    if (!uname.trim() || !upass || !code.trim()) {
-      Taro.showToast({ title: '请填写账号、密码和验证码', icon: 'none' })
-      return
-    }
+  const onEnterMall = async () => {
     if (submitting) return
     setSubmitting(true)
-    setBannerMsg('')
+    Taro.showLoading({ title: '正在进入...', mask: true })
 
     try {
-      const res = await loginByPassword({
-        uname: uname.trim(),
-        upass,
-        code: code.trim(),
-      })
+      let jsCode = ''
+      try {
+        const loginRes = await Taro.login()
+        jsCode = loginRes?.code || ''
+      } catch {
+        jsCode = ''
+      }
 
-      if (res?.success && res.results) {
-        setLoginSession(String(res.results))
-        Taro.showToast({ title: '登录成功', icon: 'success' })
-        setTimeout(() => {
-          goHome()
-        }, 400)
+      if (!jsCode) {
+        Taro.showToast({
+          title: 'H5 无微信 code，请用开发者工具跑小程序',
+          icon: 'none',
+          duration: 2000,
+        })
+      }
+
+      const entry = await checkMallEntryByWxCode(jsCode)
+
+      if (entry.status === 'blocked') {
+        Taro.showModal({
+          title: '无法进入',
+          content: entry.message,
+          showCancel: false,
+        })
         return
       }
 
-      clearLoginSession()
-      const tip = mapLoginError(res?.results)
-      if (res?.results === 'UNDERREVIEW' || res?.results === 'UNALLOWED') {
-        setBannerMsg(tip)
-      } else {
-        Taro.showToast({ title: tip, icon: 'none', duration: 2500 })
+      if (entry.status === 'registered') {
+        setLoginSession(entry.token)
+        Taro.showToast({ title: '欢迎回来', icon: 'success' })
+        setTimeout(() => goHome(), 300)
+        return
       }
-      refreshCaptcha()
+
+      // 未绑定：先到选择页（注册 / 绑定已有账号）
+      Taro.hideLoading()
+      setWxEnterPending({
+        jsCode: entry.jsCode,
+        tempToken: entry.tempToken,
+      })
+      goOnboard()
     } catch (err) {
-      clearLoginSession()
-      const tip = err instanceof Error ? err.message : '网络异常，请稍后重试'
+      const tip = err instanceof Error ? err.message : '进入失败，请稍后重试'
       Taro.showToast({ title: tip, icon: 'none' })
-      refreshCaptcha()
     } finally {
-      setSubmitting(false)
-    }
-  }
-
-  /** 小程序微信登录：先取 code；换票接口需后端提供，禁止伪造 path */
-  const onWechatLogin = async () => {
-    if (submitting) return
-    setSubmitting(true)
-    try {
-      const { code: wxCode } = await Taro.login()
-      if (!wxCode) {
-        Taro.showToast({ title: '获取微信登录凭证失败', icon: 'none' })
-        return
-      }
-      console.log('[wechat-login] js_code=', wxCode)
-      Taro.showModal({
-        title: '微信登录',
-        content:
-          '已获取微信登录 code。小程序换票接口需与后端确认后接入，请先使用账号密码登录。',
-        showCancel: false,
-      })
-    } catch {
-      Taro.showToast({ title: '微信登录失败', icon: 'none' })
-    } finally {
+      Taro.hideLoading()
       setSubmitting(false)
     }
   }
@@ -104,74 +76,22 @@ export default function LoginPage() {
     <View className='login'>
       <View className='login__hero'>
         <Text className='login__brand'>有膳商户</Text>
-        <Text className='login__sub'>欢迎登录商户端</Text>
+        <Text className='login__sub'>商户端微信小程序</Text>
       </View>
 
       <View className='login__card'>
-        {bannerMsg ? (
-          <View className='login__banner'>
-            <Text className='login__banner-text'>{bannerMsg}</Text>
-          </View>
-        ) : null}
-
-        <View className='login__field'>
-          <Text className='login__label'>账号</Text>
-          <Input
-            className='login__input'
-            type='text'
-            placeholder='请输入账号'
-            value={uname}
-            maxlength={64}
-            onInput={(e: CommonEvent) => setUname(e.detail.value)}
-          />
-        </View>
-
-        <View className='login__field'>
-          <Text className='login__label'>密码</Text>
-          <Input
-            className='login__input'
-            password
-            placeholder='请输入密码'
-            value={upass}
-            maxlength={64}
-            onInput={(e: CommonEvent) => setUpass(e.detail.value)}
-          />
-        </View>
-
-        <View className='login__field login__field--captcha'>
-          <View className='login__captcha-input'>
-            <Text className='login__label'>验证码</Text>
-            <Input
-              className='login__input'
-              type='text'
-              placeholder='请输入验证码'
-              value={code}
-              maxlength={8}
-              onInput={(e: CommonEvent) => setCode(e.detail.value)}
-            />
-          </View>
-          <CaptchaCode key={captchaNonce} onRefresh={() => setCode('')} />
-        </View>
-
-        <Text className='login__link' onClick={goRegister}>
-          没有账号？立即注册
+        <Text className='login__welcome'>欢迎光临</Text>
+        <Text className='login__hint'>
+          点击下方按钮进入商城。若微信未绑定商家，将引导您注册或绑定已有账号。
         </Text>
 
         <Button
-          className={`login__btn ${submitting || !canSubmit ? 'login__btn--disabled' : ''}`}
+          className={`login__btn ${submitting ? 'login__btn--disabled' : ''}`}
           loading={submitting}
           disabled={submitting}
-          onClick={onLogin}
+          onClick={onEnterMall}
         >
-          {submitting ? '登录中...' : '登录'}
-        </Button>
-
-        <Button
-          className='login__btn login__btn--wechat'
-          disabled={submitting}
-          onClick={onWechatLogin}
-        >
-          微信一键登录
+          {submitting ? '请稍候...' : '欢迎进入商城'}
         </Button>
       </View>
     </View>

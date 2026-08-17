@@ -1,0 +1,160 @@
+.bind {
+  min-height: 100vh;
+  padding: 48px 32px 80px;
+  background: linear-gradient(180deg, #ff640c 0%, #fff4ec 42%, #f7f3f0 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.bind__hero {
+  padding-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bind__brand {
+  font-size: 52px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.bind__sub {
+  font-size: 28px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.bind__card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  box-shadow: 0 12px 32px rgba(49, 32, 32, 0.08);
+}
+
+.bind__section-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #312020;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #fcaf52;
+}
+
+.bind__row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bind__label {
+  font-size: 24px;
+  color: #6b5a56;
+}
+
+.bind__value {
+  font-size: 30px;
+  color: #312020;
+  font-weight: 500;
+}
+
+.bind__wx {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 24px;
+  padding: 24px;
+  background: #f7f3f0;
+  border-radius: 16px;
+}
+
+.bind__tip {
+  font-size: 24px;
+  color: #6b5a56;
+  line-height: 1.5;
+  margin-top: -8px;
+}
+
+.bind__avatar-btn {
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 96px !important;
+  height: 96px !important;
+  min-height: 96px !important;
+  border: none !important;
+  border-radius: 50% !important;
+  overflow: hidden;
+  background: transparent !important;
+  line-height: 1 !important;
+}
+
+.bind__avatar-btn::after {
+  border: none;
+}
+
+.bind__avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  display: block;
+}
+
+.bind__nickname-input {
+  height: 72px;
+  padding: 0 20px;
+  border-radius: 12px;
+  background: #ffffff;
+  font-size: 28px;
+  color: #312020;
+  margin-top: 8px;
+}
+
+.bind__wx-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bind__wx-name {
+  font-size: 30px;
+  color: #312020;
+  font-weight: 600;
+}
+
+.bind__wx-tag {
+  font-size: 22px;
+  color: #07c160;
+}
+
+.bind__hint {
+  font-size: 24px;
+  color: #6b5a56;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.bind__btn {
+  height: 88px;
+  line-height: 88px;
+  background: #07c160 !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 999px !important;
+  font-size: 30px !important;
+  font-weight: 600;
+}
+
+.bind__btn--disabled {
+  opacity: 0.7;
+}
+
+.bind__error {
+  font-size: 26px;
+  color: #e53935;
+  line-height: 1.5;
+  text-align: center;
+}

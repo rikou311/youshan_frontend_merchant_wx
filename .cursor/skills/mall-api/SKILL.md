@@ -48,7 +48,7 @@ description: >-
 | 字典 | `POST /apis/common/dictionary/queryByGroupIds` 如 `["order_status"]` |
 | 退货 | `merchantrefunder/*`（见 reference） |
 
-登录/微信/支付流程 → skill `wechat-auth-payment`。
+登录/微信/支付流程 → skill `wechat-auth-payment`。小程序进站：`POST /apis/common/wxlogin/miniLogin` body `{ code }`。
 
 ## 关键数据结构
 

@@ -31,3 +31,15 @@ export function goLogin() {
 export function goRegister() {
   Taro.navigateTo({ url: '/pages/register/index' })
 }
+
+export function goOnboard() {
+  Taro.navigateTo({ url: '/pages/onboard/index' })
+}
+
+export function goBind() {
+  Taro.navigateTo({ url: '/pages/bind/index' })
+}
+
+export function goPending(mode: 'register' | 'bind' = 'register') {
+  Taro.redirectTo({ url: `/pages/pending/index?mode=${mode}` })
+}

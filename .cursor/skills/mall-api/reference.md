@@ -84,6 +84,8 @@ Profile 字段：`uname, upass, unick, phone, name, wechat, memo, socialtype, zi
 | GET | `/apis/common/index/code` |
 | POST | `/apis/common/index/logout` |
 | POST | `/apis/common/merchantuseradd/add` |
+| POST | `/apis/common/wxlogin/miniLogin` | body `{ code }`；成功 `results` 为 Bearer token；未绑定 `WECHATUNBOUND` + `extra`=openId |
+| POST | `/apis/common/wxlogin/boundWechatMini` | `{ uname, upass, token }` token 为 openId |
 | POST | `/apis/common/wxlogin/boundWechat` |
 | POST | `/apis/common/wxlogin/boundWechatGzh` |
 | — | `/apis/common/wxlogin/redirect` / `redirectGzh` |

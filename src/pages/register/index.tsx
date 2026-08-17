@@ -2,15 +2,21 @@ import { useMemo, useState } from 'react'
 import { View, Text, Input, Button, ScrollView } from '@tarojs/components'
 import type { CommonEvent } from '@tarojs/components'
 import Taro, { useLoad } from '@tarojs/taro'
-import { registerMerchant } from '@/services/auth'
-import { isLoggedIn } from '@/utils/auth'
-import { goHome, goLogin } from '@/utils/nav'
+import { boundWechatMini, parseBindResponse, registerMerchant } from '@/services/auth'
+import {
+  getWxEnterPending,
+  isLoggedIn,
+  clearWxEnterPending,
+  setLoginSession,
+} from '@/utils/auth'
+import { goHome, goLogin, goPending } from '@/utils/nav'
 import './index.scss'
 
 const UNAME_PATTERN = /^[a-zA-Z0-9]+$/
 
 export default function RegisterPage() {
-  const [unick, setUnick] = useState('')
+  const pending = getWxEnterPending()
+  const [unick, setUnick] = useState(pending?.nickName || '')
   const [name, setName] = useState('')
   const [uname, setUname] = useState('')
   const [upass, setUpass] = useState('')
@@ -21,6 +27,13 @@ export default function RegisterPage() {
   useLoad(() => {
     if (isLoggedIn()) {
       goHome()
+      return
+    }
+    // 必须从「欢迎进入商城」授权后进入；直接打开则回登录页
+    const p = getWxEnterPending()
+    if (!p?.tempToken) {
+      Taro.showToast({ title: '请先从进入商城开始', icon: 'none' })
+      goLogin()
     }
   })
 
@@ -70,16 +83,30 @@ export default function RegisterPage() {
       })
 
       if (res?.success) {
-        const tip =
-          typeof res.results === 'string' && res.results
-            ? res.results
-            : '注册成功，请登录'
-        await Taro.showModal({
-          title: '注册成功',
-          content: tip,
-          showCancel: false,
-        })
-        goLogin()
+        const openId = getWxEnterPending()?.tempToken
+        if (openId) {
+          const bindRes = await boundWechatMini({
+            uname: uname.trim(),
+            upass,
+            token: openId,
+          })
+          const parsed = parseBindResponse(bindRes)
+          clearWxEnterPending()
+          if (parsed.type === 'ok') {
+            setLoginSession(parsed.token)
+            goHome()
+            return
+          }
+          if (parsed.type === 'pending_review') {
+            goPending('bind')
+            return
+          }
+          // 绑定失败但注册已成功，仍进注册完成页
+          goPending('register')
+          return
+        }
+        clearWxEnterPending()
+        goPending('register')
         return
       }
 
@@ -103,7 +130,7 @@ export default function RegisterPage() {
     <ScrollView className='register' scrollY>
       <View className='register__hero'>
         <Text className='register__brand'>有膳商户</Text>
-        <Text className='register__sub'>新用户注册</Text>
+        <Text className='register__sub'>商家注册</Text>
       </View>
 
       <View className='register__card'>
@@ -175,17 +202,13 @@ export default function RegisterPage() {
           />
         </View>
 
-        <Text className='register__link' onClick={goLogin}>
-          已有账号？立即登录
-        </Text>
-
         <Button
           className={`register__btn ${!canSubmit ? 'register__btn--disabled' : ''}`}
           loading={submitting}
           disabled={submitting}
           onClick={onSubmit}
         >
-          {submitting ? '提交中...' : '立即注册'}
+          {submitting ? '提交中...' : '完成注册'}
         </Button>
       </View>
     </ScrollView>
