@@ -1,0 +1,46 @@
+page {
+  height: 100%;
+}
+
+.unbound {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.unbound__list {
+  flex: 1;
+  height: 0;
+  padding: 80px 24px 40px;
+  box-sizing: border-box;
+}
+
+.unbound__btn {
+  width: 400px;
+  height: 88px;
+  margin: 0 auto 32px;
+  background: #07c160;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.unbound__btn-text {
+  font-size: 28px;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.unbound__empty {
+  padding-top: 80px;
+  display: flex;
+  justify-content: center;
+}
+
+.unbound__empty-text {
+  display: block;
+  text-align: center;
+  font-size: 28px;
+  color: #6b5a56;
+}

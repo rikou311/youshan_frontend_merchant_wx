@@ -13,7 +13,7 @@ export default function PendingPage() {
   return (
     <View className='pending'>
       <View className='pending__hero'>
-        <Text className='pending__brand'>有膳商户</Text>
+        <Text className='pending__brand'>有善商户</Text>
       </View>
 
       <View className='pending__card'>

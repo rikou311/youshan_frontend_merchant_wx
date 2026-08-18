@@ -89,7 +89,7 @@ export default function OnboardPage() {
   return (
     <View className='onboard'>
       <View className='onboard__hero'>
-        <Text className='onboard__brand'>有膳商户</Text>
+        <Text className='onboard__brand'>有善商户</Text>
         <Text className='onboard__sub'>欢迎使用</Text>
       </View>
 

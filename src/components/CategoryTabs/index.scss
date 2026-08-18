@@ -1,0 +1,46 @@
+.cat-tabs {
+  white-space: nowrap;
+  padding: 0 16px 8px;
+  width: 100%;
+}
+
+.cat-tabs__item {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 20px 16px;
+  margin: 0 8px;
+  position: relative;
+}
+
+.cat-tabs__icon {
+  width: 32px;
+  height: 32px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.cat-tabs__icon--empty {
+  background: #efe8e4;
+  border-radius: 8px;
+}
+
+.cat-tabs__title {
+  font-size: 26px;
+  color: #ffffff;
+}
+
+.cat-tabs__item--active .cat-tabs__title {
+  color: #f0c04c;
+  font-weight: 600;
+}
+
+.cat-tabs__item--active::after {
+  content: '';
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 4px;
+  height: 6px;
+  border-radius: 6px;
+  background: #f0c04c;
+}

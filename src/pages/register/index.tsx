@@ -129,7 +129,7 @@ export default function RegisterPage() {
   return (
     <ScrollView className='register' scrollY>
       <View className='register__hero'>
-        <Text className='register__brand'>有膳商户</Text>
+        <Text className='register__brand'>有善商户</Text>
         <Text className='register__sub'>商家注册</Text>
       </View>
 

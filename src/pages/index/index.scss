@@ -1,66 +1,58 @@
-.home {
-  min-height: 100vh;
-  padding: 48px 32px 80px;
+page {
+  height: 100%;
+}
+
+.mall {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  padding-bottom: 140px;
+  box-sizing: border-box;
 }
 
-.home__hero {
+.mall__header {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding-top: 40px;
+  align-items: center;
+  padding: 20px 24px 12px;
+  flex-shrink: 0;
 }
 
-.home__brand {
-  font-size: 56px;
-  font-weight: 700;
-  color: #ff640c;
-  line-height: 1.2;
+.mall__avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  margin-right: 16px;
+  background: rgba(0, 0, 0, 0.52);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.home__title {
-  font-size: 36px;
-  font-weight: 600;
-  color: #312020;
-}
-
-.home__desc {
+.mall__avatar-text {
+  color: #ffffff;
   font-size: 28px;
-  color: #6b5a56;
-  line-height: 1.5;
+  font-weight: 700;
 }
 
-.home__card {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 28px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  box-shadow: 0 8px 24px rgba(49, 32, 32, 0.06);
-}
-
-.home__card-title {
-  font-size: 30px;
+.mall__hello {
+  flex: 1;
+  font-size: 26px;
   font-weight: 600;
   color: #312020;
-  margin-bottom: 8px;
 }
 
-.home__card-line {
-  font-size: 26px;
-  color: #6b5a56;
-  line-height: 1.5;
+.mall__list {
+  flex: 1;
+  height: 0;
+  padding: 8px 24px 24px;
+  box-sizing: border-box;
 }
 
-.home__cta {
-  margin-top: auto;
-  background: #f2853c !important;
-  color: #ffffff !important;
-  border: none !important;
-  border-radius: 999px !important;
-  font-size: 30px !important;
-  font-weight: 600;
+.mall__hint {
+  display: block;
+  text-align: center;
+  padding: 24px 0;
+  font-size: 24px;
+  color: #a79898;
 }

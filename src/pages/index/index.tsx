@@ -1,41 +1,125 @@
-import { View, Text, Button } from '@tarojs/components'
-import Taro, { useLoad } from '@tarojs/taro'
-import { clearLoginSession } from '@/utils/auth'
-import { goLogin, requireLogin } from '@/utils/nav'
+import { ScrollView, View, Text } from '@tarojs/components'
+import {
+  useDidShow,
+  useLoad,
+  usePullDownRefresh,
+} from '@tarojs/taro'
+import { useCallback, useState } from 'react'
+import CategoryTabs from '@/components/CategoryTabs'
+import ProductCard from '@/components/ProductCard'
+import SearchBar from '@/components/SearchBar'
+import { useHomeProducts } from '@/hooks/useHomeProducts'
+import { getPoint, getUserInfo } from '@/services/user'
+import { requireLogin, syncTabBar } from '@/utils/nav'
 import './index.scss'
 
-/** 临时欢迎首页，后续替换为商城业务首页 */
 export default function Index() {
+  const [unick, setUnick] = useState('')
+  const [point, setPoint] = useState(0)
+  const {
+    categories,
+    categoryIndex,
+    visibleProducts,
+    loading,
+    loadingMore,
+    hasMore,
+    loadCategories,
+    changeCategory,
+    applySearch,
+    loadMore,
+    refresh,
+    toggleLike,
+    syncLove,
+  } = useHomeProducts()
+
+  const loadProfile = useCallback(async () => {
+    try {
+      const [userRes, pointRes] = await Promise.all([getUserInfo(), getPoint()])
+      if (userRes?.success && userRes.results) {
+        setUnick(userRes.results.unick || '')
+        if (typeof userRes.results.point === 'number') {
+          setPoint(userRes.results.point)
+        }
+      }
+      if (pointRes?.success && pointRes.results != null) {
+        setPoint(Number(pointRes.results) || 0)
+      }
+    } catch {
+      /* 顶栏积分失败不阻断商品列表 */
+    }
+  }, [])
+
   useLoad(() => {
-    requireLogin()
+    if (!requireLogin()) return
+    loadCategories()
+    loadProfile()
   })
 
-  const onLogout = () => {
-    clearLoginSession()
-    Taro.showToast({ title: '已退出', icon: 'none' })
-    goLogin()
-  }
+  useDidShow(() => {
+    syncTabBar(0)
+    syncLove()
+  })
+
+  usePullDownRefresh(() => {
+    refresh()
+  })
+
+  const showEmpty = !loading && visibleProducts.length === 0
 
   return (
-    <View className='home'>
-      <View className='home__hero'>
-        <Text className='home__brand'>有膳商户</Text>
-        <Text className='home__title'>欢迎回来</Text>
-        <Text className='home__desc'>
-          这是临时欢迎页。登录 / 注册流程已打通，后续在此接入商品、购物车与订单。
+    <View className='mall'>
+      <View className='mall__header'>
+        <View className='mall__avatar'>
+          <Text className='mall__avatar-text'>
+            {(unick || '商').slice(0, 1)}
+          </Text>
+        </View>
+        <Text className='mall__hello'>
+          {unick || '您好'}
+          {`  （积分：${point}）`}
         </Text>
       </View>
 
-      <View className='home__card'>
-        <Text className='home__card-title'>下一步</Text>
-        <Text className='home__card-line'>· 商品列表与详情</Text>
-        <Text className='home__card-line'>· 购物车与下单</Text>
-        <Text className='home__card-line'>· 订单与支付</Text>
-      </View>
+      <SearchBar onSearch={applySearch} />
 
-      <Button className='home__cta' onClick={onLogout}>
-        退出登录
-      </Button>
+      {categories.length > 0 ? (
+        <CategoryTabs
+          items={categories}
+          activeIndex={categoryIndex}
+          onChange={changeCategory}
+        />
+      ) : null}
+
+      <ScrollView
+        className='mall__list'
+        scrollY
+        lowerThreshold={80}
+        onScrollToLower={loadMore}
+      >
+        {visibleProducts.map((item) => (
+          <ProductCard
+            key={item.id}
+            item={item}
+            onToggleLike={toggleLike}
+          />
+        ))}
+
+        {loading && visibleProducts.length === 0 ? (
+          <Text className='mall__hint'>Loading...</Text>
+        ) : null}
+
+        {showEmpty ? (
+          <Text className='mall__hint'>暂无产品</Text>
+        ) : null}
+
+        {loadingMore ? (
+          <Text className='mall__hint'>Loading...</Text>
+        ) : null}
+
+        {!loading && !loadingMore && !hasMore && visibleProducts.length > 0 ? (
+          <Text className='mall__hint'>没有更多了</Text>
+        ) : null}
+      </ScrollView>
     </View>
   )
 }

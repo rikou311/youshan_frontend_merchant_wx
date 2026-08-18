@@ -78,7 +78,7 @@ export default defineConfig<'webpack5'>(async (merge) => {
             pathRewrite: { '^/apis/': '/' },
           },
           '/commons': {
-            target: 'http://127.0.0.1:8832',
+            target: 'http://127.0.0.1:8831',
             changeOrigin: true,
             pathRewrite: { '^/commons/': '/' },
           },

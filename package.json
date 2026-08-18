@@ -2,7 +2,7 @@
   "name": "youshan-frontend-merchant-wx",
   "version": "1.0.0",
   "private": true,
-  "description": "有膳商户端微信小程序",
+  "description": "有善商户端微信小程序",
   "templateInfo": {
     "name": "default",
     "typescript": true,

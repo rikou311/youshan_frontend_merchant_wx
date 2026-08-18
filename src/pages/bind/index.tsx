@@ -113,7 +113,7 @@ export default function BindPage() {
   return (
     <View className='bind'>
       <View className='bind__hero'>
-        <Text className='bind__brand'>有膳商户</Text>
+        <Text className='bind__brand'>有善商户</Text>
         <Text className='bind__sub'>绑定微信账号</Text>
       </View>
 

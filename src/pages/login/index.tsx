@@ -75,7 +75,7 @@ export default function LoginPage() {
   return (
     <View className='login'>
       <View className='login__hero'>
-        <Text className='login__brand'>有膳商户</Text>
+        <Text className='login__brand'>有善商户</Text>
         <Text className='login__sub'>商户端微信小程序</Text>
       </View>
 

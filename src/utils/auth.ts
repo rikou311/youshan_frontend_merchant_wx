@@ -21,8 +21,49 @@ export interface BindPending {
   avatarUrl?: string
 }
 
+const FAIL_CODES = new Set(['UNDERREVIEW', 'UNALLOWED', 'WECHATUNBOUND', 'logout'])
+
+/** 把后端 token 规范成 `Bearer xxx`，供 Authorization 使用 */
+export function normalizeAuthToken(raw: string) {
+  let token = String(raw || '').trim()
+  if (!token || token === 'null' || token === 'undefined') return ''
+  if (token.startsWith('Bearer_')) {
+    token = token.replace(/^Bearer_/, 'Bearer ')
+  }
+  if (!token.startsWith('Bearer ') && token.split('.').length === 3) {
+    token = `Bearer ${token}`
+  }
+  return token
+}
+
+export function isLikelyAuthToken(raw: string) {
+  const token = normalizeAuthToken(raw)
+  if (!token.startsWith('Bearer ')) return false
+  const body = token.slice('Bearer '.length).trim()
+  return body.length > 16 && !FAIL_CODES.has(body)
+}
+
+/** 从 login / miniLogin 的 results 或对象字段里取出 token */
+export function extractAuthToken(results: unknown): string {
+  if (typeof results === 'string') {
+    const text = results.trim()
+    if (!text || FAIL_CODES.has(text) || text.includes('WECHATUNBOUND')) return ''
+    return normalizeAuthToken(text)
+  }
+  if (results && typeof results === 'object') {
+    const obj = results as Record<string, unknown>
+    for (const key of ['token', 'accessToken', 'loginToken', 'authorization']) {
+      if (typeof obj[key] === 'string' && obj[key]) {
+        const found = extractAuthToken(obj[key])
+        if (found) return found
+      }
+    }
+  }
+  return ''
+}
+
 export function getLoginToken(): string {
-  return Taro.getStorageSync(STORAGE_KEYS.loginToken) || ''
+  return normalizeAuthToken(Taro.getStorageSync(STORAGE_KEYS.loginToken) || '')
 }
 
 export function isLoggedIn(): boolean {
@@ -32,10 +73,7 @@ export function isLoggedIn(): boolean {
 }
 
 export function setLoginSession(token: string) {
-  let normalized = token
-  if (normalized.startsWith('Bearer_')) {
-    normalized = normalized.replace(/^Bearer_/, 'Bearer ')
-  }
+  const normalized = normalizeAuthToken(token)
   Taro.setStorageSync(STORAGE_KEYS.loginToken, normalized)
   Taro.setStorageSync(STORAGE_KEYS.loginState, 'true')
 }

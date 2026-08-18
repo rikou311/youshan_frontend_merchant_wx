@@ -1,5 +1,6 @@
 import Taro from '@tarojs/taro'
 import { request } from '@/services/request'
+import { extractAuthToken, getLoginToken } from '@/utils/auth'
 import type {
   ApiResponse,
   BoundWechatMiniPayload,
@@ -68,12 +69,16 @@ export async function checkMallEntryByWxCode(
   const res = await miniLogin({ code: jsCode })
   const code = resultCode(res?.results)
   const openId = extraOpenId(res?.extra)
+  const authToken = extractAuthToken(res?.results)
+
+  if (res?.success && authToken) {
+    return { status: 'registered', token: authToken }
+  }
 
   if (res?.success && code && !code.includes('WECHATUNBOUND')) {
     if (code === 'UNDERREVIEW' || code === 'UNALLOWED') {
       return { status: 'blocked', message: mapLoginError(code) }
     }
-    return { status: 'registered', token: code }
   }
 
   if (code === 'UNDERREVIEW' || code === 'UNALLOWED') {
@@ -192,6 +197,54 @@ export function mapLoginError(results: unknown): string {
         ? results
         : '登录失败，请稍后重试'
   }
+}
+
+/** /apis/common 默认不强制带 token；登出/解绑需显式带当前登录头 */
+function sessionHeader(): Record<string, string> {
+  const token = getLoginToken()
+  if (!token) return {}
+  const raw = token.startsWith('Bearer ')
+    ? token.slice('Bearer '.length).trim()
+    : token
+  return {
+    Authorization: token.startsWith('Bearer ') ? token : `Bearer ${token}`,
+    token: raw,
+  }
+}
+
+/** POST /apis/common/index/logout */
+export function logout() {
+  return request<unknown>({
+    url: '/apis/common/index/logout',
+    method: 'POST',
+    data: {},
+    header: sessionHeader(),
+  })
+}
+
+export interface BoundAccount {
+  token: string
+  type: number
+}
+
+/** POST /apis/common/index/boundList */
+export function boundList() {
+  return request<BoundAccount[]>({
+    url: '/apis/common/index/boundList',
+    method: 'POST',
+    data: {},
+    header: sessionHeader(),
+  })
+}
+
+/** POST /apis/common/index/unbound */
+export function unbound(payload: { token: string }) {
+  return request<unknown>({
+    url: '/apis/common/index/unbound',
+    method: 'POST',
+    data: payload,
+    header: sessionHeader(),
+  })
 }
 
 export type { ApiResponse }
